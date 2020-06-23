@@ -5,14 +5,34 @@
 </template>
 
 <script>
+import { eventBus } from '@/main.js'
 import Sighting from './Sighting';
+import SightingService from '@/services/SightingService.js'
+
 
 export default {
 	name: 'sightings-grid',
 	components: {
 		'sighting': Sighting
 	},
-	props: ['sightings']
+	props: ['sightings'],
+
+mounted(){
+    SightingService.getSightings()
+    .then(sighting => this.sighting = sighting);
+
+    eventBus.$on('sighting-added', (sighting) => {
+      this.sighting.push(sighting)
+    })
+
+    eventBus.$on('sighting-deleted', (id) => {
+      let index = this.sighting.findIndex(sighting => sighting._id === id)
+      this.sighting.splice(index, 1)
+    })
+  },
+	components: {
+    'sighting': Sighting
+  },
 }
 </script>
 
